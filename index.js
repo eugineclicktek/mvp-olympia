@@ -42,3 +42,7 @@ export async function user(event) {
 
   return respond(200, found);
 }
+
+export async function health() {
+  return respond(200, { ok: true });
+}

@@ -10,7 +10,26 @@ function respond(statusCode, payload) {
   return { statusCode, body: JSON.stringify(payload) };
 }
 
+// Only checks that a present body parses; the handler uses no body fields.
+function hasValidBody(event) {
+  const raw = event?.body;
+  if (raw === undefined || raw === null || raw === "") return true;
+  try {
+    const text = event.isBase64Encoded
+      ? Buffer.from(String(raw), "base64").toString("utf8")
+      : raw;
+    JSON.parse(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function user(event) {
+  if (!hasValidBody(event)) {
+    return respond(400, { message: "Request body is not valid JSON" });
+  }
+
   const id = getUserId(event);
   if (!id) {
     return respond(400, { message: "Missing user id" });

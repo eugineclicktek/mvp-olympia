@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert";
-import { user } from "./index.js";
+import { user, health } from "./index.js";
 
 const call = (id) => user({ pathParameters: id === undefined ? undefined : { id } });
 
@@ -76,4 +76,10 @@ test("base64 body is decoded before parsing", async () => {
   assert.strictEqual(good.statusCode, 200);
   const bad = await user({ pathParameters: { id: "1" }, body: enc("{bad"), isBase64Encoded: true });
   assert.strictEqual(bad.statusCode, 400);
+});
+
+test("health returns 200 with ok true", async () => {
+  const res = await health();
+  assert.strictEqual(res.statusCode, 200);
+  assert.deepStrictEqual(JSON.parse(res.body), { ok: true });
 });

@@ -26,3 +26,11 @@ test("missing or empty id returns 400", async () => {
     assert.strictEqual(res.statusCode, 400);
   }
 });
+
+test("null pathParameters or non-string id returns 400", async () => {
+  for (const event of [{ pathParameters: null }, { pathParameters: { id: 1 } }, { pathParameters: { id: null } }]) {
+    const res = await user(event);
+    assert.strictEqual(res.statusCode, 400);
+    assert.deepStrictEqual(JSON.parse(res.body), { message: "Missing user id" });
+  }
+});
